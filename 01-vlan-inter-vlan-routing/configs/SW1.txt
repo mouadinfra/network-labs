@@ -1,0 +1,57 @@
+! SW1 - access switch with 3 user VLANs + management VLAN
+! Lab values only
+hostname SW1
+no ip domain-lookup
+service password-encryption
+enable secret LabEnable123
+!
+vlan 10
+ name ADMIN
+vlan 20
+ name STAFF
+vlan 30
+ name GUEST
+vlan 99
+ name MGMT
+!
+interface range FastEthernet0/1 - 10
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+!
+interface range FastEthernet0/11 - 20
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+!
+interface range FastEthernet0/21 - 24
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+!
+interface GigabitEthernet0/1
+ description Trunk to R1
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,99
+ switchport nonegotiate
+!
+interface GigabitEthernet0/2
+ shutdown
+!
+interface Vlan99
+ description Management
+ ip address 192.168.99.2 255.255.255.0
+ no shutdown
+!
+ip default-gateway 192.168.99.1
+!
+line con 0
+ password LabConsole123
+ login
+ logging synchronous
+line vty 0 4
+ password LabVty123
+ login
+!
+end
